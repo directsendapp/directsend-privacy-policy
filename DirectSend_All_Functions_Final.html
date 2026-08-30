@@ -1,0 +1,1283 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DirectSend - Chat for WA</title>
+
+<style>
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+  font-family:'Segoe UI',Roboto,Arial,sans-serif;
+}
+
+body{
+  background:#FAF7F2;
+  min-height:100vh;
+  display:flex;
+  justify-content:center;
+  padding:10px 10px 70px;
+}
+
+.app-frame{
+  width:100%;
+  max-width:390px;
+  background:#fff;
+  border-radius:26px;
+  overflow:hidden;
+  border:1px solid #F5E5BA;
+  box-shadow:0 12px 30px rgba(0,0,0,.08);
+}
+
+.header{
+  background:linear-gradient(135deg,#FFE066,#FFCA28);
+  text-align:center;
+  padding:16px;
+  position:relative;
+  border-bottom:2px solid #F6BE22;
+}
+
+.lang-container{
+  position:absolute;
+  top:10px;
+  right:10px;
+}
+
+.lang-select,
+.country-select{
+  background:#fff;
+  border:1px solid #E6A100;
+  border-radius:9px;
+  padding:5px 7px;
+  font-size:11px;
+  font-weight:700;
+  color:#4E342E;
+}
+
+.logo-container{
+  width:58px;
+  height:58px;
+  margin:4px auto 6px;
+  border-radius:16px;
+  overflow:hidden;
+  box-shadow:0 5px 14px rgba(220,150,0,.3);
+}
+
+.logo-svg{
+  width:100%;
+  height:100%;
+}
+
+.header h2{
+  font-size:19px;
+  font-weight:800;
+  color:#2D241E;
+}
+
+.header p{
+  font-size:10.5px;
+  margin-top:2px;
+  color:#4E342E;
+  font-weight:600;
+}
+
+.content{
+  padding:14px 16px;
+}
+
+.label{
+  font-size:11.5px;
+  font-weight:700;
+  color:#4E342E;
+  margin-bottom:5px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.phone-row{
+  display:flex;
+  gap:6px;
+  margin-bottom:8px;
+}
+
+.country-select{
+  width:105px;
+  border:1.5px solid #FDD835;
+  background:#FFF9E6;
+  outline:none;
+}
+
+.phone-input{
+  flex:1;
+  padding:10px 11px;
+  border:1.5px solid #FDD835;
+  border-radius:12px;
+  font-size:13.5px;
+  outline:none;
+  background:#FFFDF9;
+}
+
+.phone-input:focus{
+  border-color:#FB8C00;
+}
+
+.paste-btn{
+  border:1.5px solid #FDD835;
+  background:#FFF9E6;
+  color:#E65100;
+  border-radius:12px;
+  padding:0 9px;
+  font-size:11px;
+  font-weight:700;
+}
+
+.history-wrap{
+  display:flex;
+  gap:6px;
+  overflow-x:auto;
+  margin-bottom:10px;
+}
+
+.hist-chip{
+  background:#F5F5F7;
+  border:1px solid #E5E5EA;
+  padding:4px 8px;
+  border-radius:14px;
+  font-size:10px;
+  white-space:nowrap;
+}
+
+.tools-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:6px;
+  margin-bottom:10px;
+}
+
+.tool-btn{
+  background:#FFFDF7;
+  border:1.5px dashed #FBC02D;
+  border-radius:12px;
+  padding:8px 3px;
+  text-align:center;
+  color:#E65100;
+  font-size:10px;
+  font-weight:700;
+  cursor:pointer;
+}
+
+.tool-btn span:first-child{
+  display:block;
+  font-size:17px;
+  margin-bottom:2px;
+}
+
+.hidden-input{
+  display:none;
+}
+
+.file-preview{
+  display:none;
+  background:#E8F5E9;
+  border:1px solid #81C784;
+  border-radius:10px;
+  padding:7px;
+  font-size:10.5px;
+  color:#2E7D32;
+  margin-bottom:8px;
+}
+
+textarea{
+  width:100%;
+  height:70px;
+  resize:none;
+  padding:10px 12px;
+  border:1.5px solid #FDD835;
+  border-radius:12px;
+  background:#FFFDF9;
+  outline:none;
+  font-size:13px;
+}
+
+.emoji-bar{
+  display:flex;
+  gap:5px;
+  overflow-x:auto;
+  margin:8px 0;
+}
+
+.emoji-item{
+  min-width:34px;
+  text-align:center;
+  padding:4px;
+  border:1px solid #FFE082;
+  background:#FFFDF7;
+  border-radius:8px;
+  cursor:pointer;
+}
+
+.quick-tags{
+  display:flex;
+  gap:5px;
+  overflow-x:auto;
+  margin-bottom:10px;
+}
+
+.tag{
+  background:#FFF9E6;
+  border:1px solid #FFE082;
+  padding:5px 9px;
+  border-radius:15px;
+  font-size:10px;
+  white-space:nowrap;
+}
+
+.action-group{
+  display:flex;
+  gap:6px;
+}
+
+.send-btn{
+  flex:1;
+  padding:12px;
+  border:0;
+  border-radius:12px;
+  background:linear-gradient(135deg,#FFB300,#F57F17);
+  color:#fff;
+  font-size:14px;
+  font-weight:800;
+}
+
+.call-btn,
+.sms-btn{
+  width:44px;
+  border-radius:12px;
+  font-size:16px;
+  border:1.5px solid #81C784;
+  background:#E8F5E9;
+}
+
+.sms-btn{
+  background:#E3F2FD;
+  border-color:#90CAF9;
+}
+
+.consent-box{
+  display:flex;
+  gap:7px;
+  margin-top:10px;
+  padding:8px;
+  border:1px solid #FFE082;
+  border-radius:10px;
+  background:#FFFDE7;
+  font-size:10.5px;
+  line-height:1.45;
+  color:#5D4037;
+}
+
+.consent-box input{
+  margin-top:2px;
+  accent-color:#F57F17;
+}
+
+.privacy-notice{
+  margin-top:8px;
+  background:#FFFDE7;
+  border:1px solid #FFF59D;
+  border-radius:10px;
+  padding:8px;
+  font-size:10px;
+  line-height:1.45;
+  color:#6D4C41;
+  text-align:center;
+}
+
+.privacy-link{
+  color:#1565C0;
+  text-decoration:underline;
+  font-weight:700;
+  cursor:pointer;
+}
+
+.status-box{
+  display:none;
+  margin-top:8px;
+  padding:7px;
+  border-radius:9px;
+  background:#FFF3E0;
+  border:1px solid #FFCC80;
+  color:#E65100;
+  text-align:center;
+  font-size:10.5px;
+}
+
+.footer{
+  text-align:center;
+  padding:10px;
+  font-size:9.5px;
+  color:#8D6E63;
+  line-height:1.4;
+}
+
+.ad-banner-bottom{
+  position:fixed;
+  bottom:0;
+  left:50%;
+  transform:translateX(-50%);
+  width:100%;
+  max-width:390px;
+  height:50px;
+  background:#F0EAE1;
+  border-top:1px solid #E0D3C1;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#8D6E63;
+  font-size:10px;
+  font-weight:700;
+}
+
+.modal{
+  display:none;
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.55);
+  z-index:9999;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+}
+
+.modal-card{
+  width:100%;
+  max-width:380px;
+  max-height:85vh;
+  overflow:auto;
+  background:#fff;
+  border-radius:18px;
+  padding:18px;
+  color:#3E2723;
+}
+
+.modal-card h3{
+  margin-bottom:10px;
+}
+
+.modal-card p{
+  font-size:12px;
+  line-height:1.6;
+  margin-bottom:10px;
+}
+
+.modal-close{
+  width:100%;
+  padding:10px;
+  border:0;
+  border-radius:10px;
+  background:#FFB300;
+  color:#fff;
+  font-weight:800;
+}
+</style>
+</head>
+
+<body>
+
+<div class="app-frame">
+
+<div class="header">
+
+<div class="lang-container">
+<select id="langChoice" class="lang-select" onchange="changeLanguage()">
+<option value="ta">தமிழ்</option>
+<option value="en">English</option>
+<option value="hi">हिंदी</option>
+</select>
+</div>
+
+<div class="logo-container">
+<svg class="logo-svg" viewBox="0 0 512 512">
+<defs>
+<linearGradient id="bg" x1="0%" y1="0%" x2="0%" y2="100%">
+<stop offset="0%" stop-color="#FFF176"/>
+<stop offset="100%" stop-color="#FFD54F"/>
+</linearGradient>
+</defs>
+
+<rect width="512" height="512" rx="110" fill="url(#bg)"/>
+
+<circle cx="256" cy="256" r="165"
+fill="none"
+stroke="#262626"
+stroke-width="18"
+stroke-dasharray="260 80 180 80"
+stroke-linecap="round"/>
+
+<rect x="85" y="215" width="80" height="15" rx="7" fill="#FBC02D"/>
+<rect x="65" y="245" width="130" height="15" rx="7" fill="#FBC02D"/>
+<rect x="110" y="275" width="125" height="15" rx="7" fill="#FBC02D"/>
+
+<rect x="160" y="145" width="215" height="190"
+rx="35" fill="#fff"
+transform="rotate(-6 267 240)"/>
+
+<rect x="195" y="180" width="70" height="12"
+rx="6" fill="#FBC02D"/>
+
+<rect x="198" y="208" width="55" height="11"
+rx="5" fill="#FBC02D"/>
+
+<path d="M260 230 L415 205
+C425 203 432 214 427 222
+L315 330
+C308 337 296 332 297 322
+L308 265
+L263 246
+C255 242 253 231 260 230Z"
+fill="#FBC02D"/>
+
+<path d="M260 230 L415 205
+C425 203 432 214 427 222
+L315 330
+C308 337 296 332 297 322
+L308 265
+L263 246
+C255 242 253 231 260 230Z"
+fill="none"
+stroke="#fff"
+stroke-width="8"/>
+</svg>
+</div>
+
+<h2>DirectSend</h2>
+<p id="subTitle">நேரடி WhatsApp சாட் • எண் சேமிக்க தேவையில்லை</p>
+
+</div>
+
+<div class="content">
+
+<label class="label">
+<span id="lblPhone">மொபைல் எண்</span>
+<span onclick="clearHistory()" id="clearHist"
+style="font-size:10px;color:#D84315;cursor:pointer;">
+வரலாற்றை நீக்கு ✕
+</span>
+</label>
+
+<div class="phone-row">
+
+<select id="countryCode" class="country-select">
+
+<option value="91">🇮🇳 +91 India</option>
+<option value="971">🇦🇪 +971 UAE</option>
+<option value="1">🇺🇸 +1 USA</option>
+<option value="1">🇨🇦 +1 Canada</option>
+<option value="44">🇬🇧 +44 UK</option>
+<option value="61">🇦🇺 +61 Australia</option>
+<option value="64">🇳🇿 +64 New Zealand</option>
+<option value="65">🇸🇬 +65 Singapore</option>
+<option value="60">🇲🇾 +60 Malaysia</option>
+<option value="81">🇯🇵 +81 Japan</option>
+<option value="82">🇰🇷 +82 South Korea</option>
+<option value="86">🇨🇳 +86 China</option>
+<option value="49">🇩🇪 +49 Germany</option>
+<option value="33">🇫🇷 +33 France</option>
+<option value="39">🇮🇹 +39 Italy</option>
+<option value="34">🇪🇸 +34 Spain</option>
+<option value="31">🇳🇱 +31 Netherlands</option>
+<option value="32">🇧🇪 +32 Belgium</option>
+<option value="41">🇨🇭 +41 Switzerland</option>
+<option value="43">🇦🇹 +43 Austria</option>
+<option value="45">🇩🇰 +45 Denmark</option>
+<option value="46">🇸🇪 +46 Sweden</option>
+<option value="47">🇳🇴 +47 Norway</option>
+<option value="358">🇫🇮 +358 Finland</option>
+<option value="351">🇵🇹 +351 Portugal</option>
+<option value="30">🇬🇷 +30 Greece</option>
+<option value="90">🇹🇷 +90 Turkey</option>
+<option value="972">🇮🇱 +972 Israel</option>
+<option value="966">🇸🇦 +966 Saudi Arabia</option>
+<option value="974">🇶🇦 +974 Qatar</option>
+<option value="965">🇰🇼 +965 Kuwait</option>
+<option value="968">🇴🇲 +968 Oman</option>
+<option value="973">🇧🇭 +973 Bahrain</option>
+<option value="92">🇵🇰 +92 Pakistan</option>
+<option value="880">🇧🇩 +880 Bangladesh</option>
+<option value="94">🇱🇰 +94 Sri Lanka</option>
+<option value="977">🇳🇵 +977 Nepal</option>
+<option value="27">🇿🇦 +27 South Africa</option>
+<option value="234">🇳🇬 +234 Nigeria</option>
+<option value="254">🇰🇪 +254 Kenya</option>
+<option value="55">🇧🇷 +55 Brazil</option>
+<option value="52">🇲🇽 +52 Mexico</option>
+<option value="54">🇦🇷 +54 Argentina</option>
+
+</select>
+
+<input
+id="phoneNum"
+class="phone-input"
+type="tel"
+inputmode="numeric"
+placeholder="Mobile number"
+>
+
+<button class="paste-btn" onclick="pasteNumber()">📋</button>
+
+</div>
+
+<div class="history-wrap" id="historyChips"></div>
+
+<label class="label" id="lblTools">
+இணைப்பு & கருவிகள்
+</label>
+
+<div class="tools-grid">
+
+<div class="tool-btn" onclick="fetchLocation()">
+<span>📍</span>
+<span id="btnLocation">Location</span>
+</div>
+
+<div class="tool-btn" onclick="document.getElementById('imageInput').click()">
+<span>🖼️</span>
+<span id="btnImage">Image</span>
+</div>
+
+<div class="tool-btn" onclick="document.getElementById('docInput').click()">
+<span>📄</span>
+<span id="btnDocument">Document</span>
+</div>
+
+</div>
+
+<input
+type="file"
+id="imageInput"
+class="hidden-input"
+accept="image/*"
+onchange="fileSelected(this,'image')"
+>
+
+<input
+type="file"
+id="docInput"
+class="hidden-input"
+accept=".pdf,.doc,.docx,.xls,.xlsx,.txt"
+onchange="fileSelected(this,'document')"
+>
+
+<div id="filePreview" class="file-preview">
+<span id="fileName"></span>
+<span onclick="removeFile()" style="float:right;cursor:pointer;">❌</span>
+</div>
+
+<label class="label" id="lblMsg">
+மெசேஜ்
+</label>
+
+<textarea
+id="msgBox"
+placeholder="உரையை உள்ளிடவும்..."
+></textarea>
+
+<div class="emoji-bar">
+
+<span class="emoji-item" onclick="appendEmoji('👍')">👍</span>
+<span class="emoji-item" onclick="appendEmoji('🙏')">🙏</span>
+<span class="emoji-item" onclick="appendEmoji('😊')">😊</span>
+<span class="emoji-item" onclick="appendEmoji('🤝')">🤝</span>
+<span class="emoji-item" onclick="appendEmoji('✅')">✅</span>
+<span class="emoji-item" onclick="appendEmoji('🚚')">🚚</span>
+<span class="emoji-item" onclick="appendEmoji('📍')">📍</span>
+<span class="emoji-item" onclick="appendEmoji('💵')">💵</span>
+
+</div>
+
+<div class="quick-tags">
+
+<span class="tag" id="tag1" onclick="insertQuickMessage('tag1')">👋 வணக்கம்</span>
+<span class="tag" id="tag2" onclick="insertQuickMessage('tag2')">💳 Payment</span>
+<span class="tag" id="tag3" onclick="insertQuickMessage('tag3')">🚚 Transport</span>
+
+</div>
+
+<div class="action-group">
+
+<button
+class="send-btn"
+id="btnSend"
+onclick="sendWhatsApp()">
+WhatsApp-ல் திறக்க 🚀
+</button>
+
+<button
+class="call-btn"
+onclick="directCall()">
+📞
+</button>
+
+<button
+class="sms-btn"
+onclick="directSMS()">
+💬
+</button>
+
+</div>
+
+<div class="consent-box">
+
+<input
+type="checkbox"
+id="consentCheck"
+>
+
+<label id="consentText">
+தனியுரிமைக் கொள்கையை படித்து ஏற்றுக்கொள்கிறேன். அதில் குறிப்பிடப்பட்டுள்ளபடி என் தகவல்களை சேகரித்து பயன்படுத்துவதற்கு நான் சம்மதிக்கிறேன்.
+</label>
+
+</div>
+
+<div class="privacy-notice">
+
+<span id="privacyText">
+🔒 <b>தனியுரிமை:</b>
+Phone number history இந்த device-ல் மட்டும் local storage-ல் சேமிக்கப்படும்.
+</span>
+
+<br>
+
+<span
+class="privacy-link"
+onclick="openPrivacy()"
+id="privacyLink">
+Privacy Policy
+</span>
+
+</div>
+
+<div class="status-box" id="statusBox"></div>
+
+</div>
+
+<div class="footer">
+Private Messaging Utility<br>
+Not affiliated with WhatsApp Inc.
+</div>
+
+</div>
+
+<div class="ad-banner-bottom">
+📢 ADVERTISEMENT SPACE
+</div>
+
+<!-- PRIVACY MODAL -->
+
+<div class="modal" id="privacyModal">
+
+<div class="modal-card">
+
+<h3 id="privacyTitle">
+DirectSend Privacy Policy
+</h3>
+
+<div id="privacyContent"></div>
+
+<button
+class="modal-close"
+onclick="closePrivacy()"
+id="privacyClose">
+Close
+</button>
+
+</div>
+
+</div>
+
+<script>
+
+let currentLang="ta";
+
+let selectedFile=null;
+
+const PRIVACY_POLICY_URL="https://directsendapp.github.io/directsend-privacy-policy/privacy.html";
+
+const translations={
+
+ta:{
+sub:"நேரடி WhatsApp சாட் • எண் சேமிக்க தேவையில்லை",
+phone:"மொபைல் எண்",
+tools:"இணைப்பு & கருவிகள்",
+location:"இருப்பிடம்",
+image:"படம்",
+document:"ஆவணம்",
+message:"மெசேஜ்",
+placeholder:"உரையை உள்ளிடவும்...",
+tag1:"👋 வணக்கம்",
+tag2:"💳 Payment",
+tag3:"🚚 Transport",
+send:"WhatsApp-ல் திறக்க 🚀",
+clear:"வரலாற்றை நீக்கு ✕",
+consent:"தனியுரிமைக் கொள்கையை படித்து ஏற்றுக்கொள்கிறேன். அதில் குறிப்பிடப்பட்டுள்ளபடி என் தகவல்களை சேகரித்து பயன்படுத்துவதற்கு நான் சம்மதிக்கிறேன்.",
+privacy:"🔒 <b>தனியுரிமை:</b> உங்கள் சம்மதத்துடன் மட்டுமே phone number history இந்த device-ல் local storage-ல் சேமிக்கப்படும்.",
+valid:"சரியான மொபைல் எண்ணை உள்ளிடவும்.",
+consentReq:"தொடர, Privacy Policy consent checkbox-ஐ தேர்வு செய்யவும்.",
+opening:"WhatsApp / Web திறக்கப்படுகிறது...",
+location:"📍 இருப்பிடம் பெறப்படுகிறது...",
+locationError:"Location permission கிடைக்கவில்லை.",
+privacyTitle:"DirectSend Privacy Policy",
+close:"மூடு",
+quickMessages:{tag1:"👋 வணக்கம்!",tag2:"💳 கட்டண விவரங்களை அனுப்பவும்.",tag3:"🚚 போக்குவரத்து விவரங்கள்."},
+fileShare:"கோப்பை பகிர்வதற்கான ஆப்ஷனை தேர்வு செய்யவும். பிறகு WhatsApp-ஐ தேர்வு செய்யவும்.",
+fileNoShare:"இந்த சாதனத்தில் கோப்பை நேரடியாக பகிரும் வசதி இல்லை. கோப்பை WhatsApp-ல் கைமுறையாக இணைக்கவும்."
+},
+
+en:{
+sub:"Direct WhatsApp Chat • No Contact Save",
+phone:"Mobile Number",
+tools:"Tools & Attachments",
+location:"Location",
+image:"Image",
+document:"Document",
+message:"Message",
+placeholder:"Type your message...",
+tag1:"👋 Hello",
+tag2:"💳 Payment",
+tag3:"🚚 Transport",
+send:"Open in WhatsApp 🚀",
+clear:"Clear History ✕",
+consent:"I have read and agree to the Privacy Policy and consent to the collection and use of my information as described in it.",
+privacy:"🔒 <b>Privacy:</b> Phone number history is stored in local storage on this device only with your consent.",
+valid:"Please enter a valid mobile number.",
+consentReq:"Please read and accept the Privacy Policy consent checkbox to continue.",
+opening:"Opening WhatsApp / Web...",
+location:"📍 Getting location...",
+locationError:"Location permission unavailable.",
+privacyTitle:"DirectSend Privacy Policy",
+close:"Close",
+quickMessages:{tag1:"👋 Hello!",tag2:"💳 Please send payment details.",tag3:"🚚 Transport details."},
+fileShare:"Choose WhatsApp from the share options to send the selected file.",
+fileNoShare:"Direct file sharing is not supported on this device. Please attach the file manually in WhatsApp."
+},
+
+hi:{
+sub:"डायरेक्ट WhatsApp चैट • नंबर सेव करने की जरूरत नहीं",
+phone:"मोबाइल नंबर",
+tools:"टूल्स और अटैचमेंट",
+location:"लोकेशन",
+image:"फोटो",
+document:"दस्तावेज़",
+message:"संदेश",
+placeholder:"अपना संदेश लिखें...",
+tag1:"👋 नमस्ते",
+tag2:"💳 Payment",
+tag3:"🚚 Transport",
+send:"WhatsApp में खोलें 🚀",
+clear:"इतिहास साफ़ करें ✕",
+consent:"मैंने Privacy Policy पढ़ ली है और मैं इससे सहमत हूँ। इसमें बताए गए अनुसार अपनी जानकारी के संग्रह और उपयोग के लिए मैं सहमति देता हूँ।",
+privacy:"🔒 <b>गोपनीयता:</b> आपकी सहमति से ही Phone number history इसी डिवाइस के local storage में रखी जाती है।",
+valid:"कृपया सही मोबाइल नंबर दर्ज करें।",
+consentReq:"जारी रखने के लिए Privacy Policy consent checkbox चुनें।",
+opening:"WhatsApp / Web खोला जा रहा है...",
+location:"📍 लोकेशन प्राप्त की जा रही है...",
+locationError:"Location permission उपलब्ध नहीं है।",
+privacyTitle:"DirectSend Privacy Policy",
+close:"बंद करें",
+quickMessages:{tag1:"👋 नमस्ते!",tag2:"💳 कृपया भुगतान विवरण भेजें।",tag3:"🚚 परिवहन विवरण।"},
+fileShare:"चुनी गई फ़ाइल भेजने के लिए शेयर विकल्प में WhatsApp चुनें।",
+fileNoShare:"इस डिवाइस में सीधे फ़ाइल शेयर करने की सुविधा उपलब्ध नहीं है। कृपया फ़ाइल को WhatsApp में मैन्युअल रूप से जोड़ें।"
+}
+
+};
+
+window.onload=function(){
+
+loadHistory();
+
+changeLanguage();
+
+};
+
+function changeLanguage(){
+
+currentLang=document.getElementById("langChoice").value;
+
+const t=translations[currentLang];
+
+document.getElementById("subTitle").innerText=t.sub;
+
+document.getElementById("lblPhone").innerText=t.phone;
+
+document.getElementById("lblTools").innerText=t.tools;
+
+document.getElementById("btnLocation").innerText=t.location;
+
+document.getElementById("btnImage").innerText=t.image;
+
+document.getElementById("btnDocument").innerText=t.document;
+
+document.getElementById("lblMsg").innerText=t.message;
+
+document.getElementById("msgBox").placeholder=t.placeholder;
+
+document.getElementById("tag1").innerText=t.tag1;
+
+document.getElementById("tag2").innerText=t.tag2;
+
+document.getElementById("tag3").innerText=t.tag3;
+
+document.getElementById("btnSend").innerText=t.send;
+
+document.getElementById("clearHist").innerText=t.clear;
+
+document.getElementById("consentText").innerText=t.consent;
+
+document.getElementById("privacyText").innerHTML=t.privacy;
+
+document.getElementById("privacyClose").innerText=t.close;
+
+}
+
+function appendEmoji(e){
+
+const box=document.getElementById("msgBox");
+
+box.value+=(box.value?" ":"")+e;
+
+}
+
+function insertMsg(text){
+  document.getElementById("msgBox").value=text;
+}
+
+function insertQuickMessage(key){
+  const text=translations[currentLang].quickMessages[key];
+  if(text) document.getElementById("msgBox").value=text;
+}
+
+async function pasteNumber(){
+
+try{
+
+const text=await navigator.clipboard.readText();
+
+document.getElementById("phoneNum").value=
+text.replace(/\D/g,"");
+
+}catch(e){
+
+const text=prompt("Enter mobile number:");
+
+if(text){
+
+document.getElementById("phoneNum").value=
+text.replace(/\D/g,"");
+
+}
+
+}
+
+}
+
+function getPhone(){
+
+return document
+.getElementById("phoneNum")
+.value
+.replace(/\D/g,"");
+
+}
+
+function validPhone(){
+
+const phone=getPhone();
+
+return phone.length>=5 && phone.length<=15;
+
+}
+
+function saveHistory(phone){
+
+const consent=document.getElementById("consentCheck").checked;
+
+if(!consent)return;
+
+try{
+
+let arr=JSON.parse(
+localStorage.getItem("ds_history")||"[]"
+);
+
+arr=arr.filter(x=>x!==phone);
+
+arr.unshift(phone);
+
+arr=arr.slice(0,5);
+
+localStorage.setItem(
+"ds_history",
+JSON.stringify(arr)
+);
+
+loadHistory();
+
+}catch(e){}
+
+}
+
+function loadHistory(){
+
+const wrap=document.getElementById("historyChips");
+
+wrap.innerHTML="";
+
+try{
+
+const arr=JSON.parse(
+localStorage.getItem("ds_history")||"[]"
+);
+
+arr.forEach(num=>{
+
+const chip=document.createElement("span");
+
+chip.className="hist-chip";
+
+chip.innerText="🕒 "+num;
+
+chip.onclick=function(){
+
+document.getElementById("phoneNum").value=num;
+
+};
+
+wrap.appendChild(chip);
+
+});
+
+}catch(e){}
+
+}
+
+function clearHistory(){
+
+localStorage.removeItem("ds_history");
+
+loadHistory();
+
+}
+
+async function sendWhatsApp(){
+
+const t=translations[currentLang];
+
+if(!document.getElementById("consentCheck").checked){
+  alert(t.consentReq);
+  return;
+}
+
+const phone=getPhone();
+if(!validPhone()){
+  alert(t.valid);
+  return;
+}
+
+const code=document.getElementById("countryCode").value;
+const msg=document.getElementById("msgBox").value.trim();
+saveHistory(phone);
+
+/* File selected: use the Android/system share sheet so the user can
+   choose WhatsApp and the real file is passed as an attachment. */
+if(selectedFile){
+  try{
+    if(navigator.canShare && navigator.canShare({files:[selectedFile]}) && navigator.share){
+      showStatus(t.fileShare);
+      await navigator.share({
+        files:[selectedFile],
+        title:"DirectSend",
+        text:msg || undefined
+      });
+      return;
+    }
+  }catch(err){
+    /* User cancelling the share sheet is not an error requiring a fallback. */
+    if(err && err.name === "AbortError") return;
+  }
+
+  alert(t.fileNoShare);
+  return;
+}
+
+let url="https://wa.me/"+code+phone;
+if(msg){ url+="?text="+encodeURIComponent(msg); }
+showStatus(t.opening);
+setTimeout(function(){ window.location.href=url; },300);
+
+}
+
+function directCall(){
+
+const t=translations[currentLang];
+
+if(!document.getElementById("consentCheck").checked){
+
+alert(t.consentReq);
+
+return;
+
+}
+
+const phone=getPhone();
+
+if(!validPhone()){
+
+alert(t.valid);
+
+return;
+
+}
+
+const code=document.getElementById("countryCode").value;
+
+saveHistory(phone);
+
+window.location.href="tel:+"+code+phone;
+
+}
+
+function directSMS(){
+
+const t=translations[currentLang];
+
+if(!document.getElementById("consentCheck").checked){
+
+alert(t.consentReq);
+
+return;
+
+}
+
+const phone=getPhone();
+
+if(!validPhone()){
+
+alert(t.valid);
+
+return;
+
+}
+
+const code=document.getElementById("countryCode").value;
+
+const msg=document.getElementById("msgBox").value;
+
+saveHistory(phone);
+
+window.location.href=
+"sms:+"+code+phone+
+"?body="+encodeURIComponent(msg);
+
+}
+
+function fetchLocation(){
+
+const t=translations[currentLang];
+
+document.getElementById("msgBox").value=t.location;
+
+if(!navigator.geolocation){
+
+document.getElementById("msgBox").value=
+"https://maps.google.com";
+
+return;
+
+}
+
+navigator.geolocation.getCurrentPosition(
+
+function(position){
+
+const lat=position.coords.latitude;
+
+const lon=position.coords.longitude;
+
+document.getElementById("msgBox").value=
+"📍 My Location: https://www.google.com/maps?q="+
+lat+","+lon;
+
+},
+
+function(){
+
+document.getElementById("msgBox").value=
+"https://maps.google.com";
+
+showStatus(t.locationError);
+
+},
+
+{
+enableHighAccuracy:true,
+timeout:10000
+}
+
+);
+
+}
+
+function fileSelected(input,type){
+
+if(!input.files || !input.files[0])return;
+
+selectedFile=input.files[0];
+
+const preview=document.getElementById("filePreview");
+
+document.getElementById("fileName").innerText=
+(type==="image"?"🖼️ ":"📄 ")+selectedFile.name;
+
+preview.style.display="block";
+
+/* The selected file is sent through the device share sheet when Send is tapped. */
+
+}
+
+function removeFile(){
+
+selectedFile=null;
+
+document.getElementById("imageInput").value="";
+
+document.getElementById("docInput").value="";
+
+document.getElementById("filePreview").style.display="none";
+
+}
+
+function showStatus(text){
+
+const box=document.getElementById("statusBox");
+
+box.innerText=text;
+
+box.style.display="block";
+
+setTimeout(function(){
+
+box.style.display="none";
+
+},4000);
+
+}
+
+function openPrivacy(){
+
+const t=translations[currentLang];
+
+document.getElementById("privacyTitle").innerText=
+t.privacyTitle;
+
+document.getElementById("privacyContent").innerHTML=
+
+currentLang==="ta"
+
+?
+
+`
+<p><b>DirectSend Privacy Policy</b></p>
+
+<p>DirectSend ஒரு messaging utility. இந்த app remote customer database-ஐ இயக்குவதில்லை.</p>
+
+<p>நீங்கள் consent கொடுத்தால், சமீபத்தில் பயன்படுத்திய அதிகபட்சம் 5 phone numbers இந்த சாதனத்தின் local storage-ல் சேமிக்கப்படலாம்.</p>
+
+<p>Clear History மூலம் இந்த history-ஐ எப்போது வேண்டுமானாலும் நீக்கலாம்.</p>
+
+<p>Message மற்றும் phone number-ஐ WhatsApp அல்லது browser/device service-க்கு நீங்கள் பயன்படுத்தும்போது அந்த service-க்கு அனுப்பப்படலாம்.</p>
+
+<p>Location feature பயன்படுத்தும்போது device location permission கேட்கப்படும்.</p>
+
+<p>Selected image/document இந்த web page-ல் preview செய்ய மட்டுமே பயன்படுத்தப்படுகிறது. அதை DirectSend remote server-க்கு upload செய்யாது.</p>
+
+<p><b>சம்மதம்:</b> App-ஐ பயன்படுத்துவதற்கு முன் Privacy Policy consent checkbox-ஐ நீங்கள் தானாக தேர்வு செய்ய வேண்டும். Checkbox முன்கூட்டியே தேர்வு செய்யப்படாது.</p>
+
+<p><a href="https://directsendapp.github.io/directsend-privacy-policy/privacy.html" target="_blank">View Full Online Privacy Policy</a></p>
+`
+
+:
+
+currentLang==="en"
+
+?
+
+`
+<p><b>DirectSend Privacy Policy</b></p>
+
+<p>DirectSend is a messaging utility. It does not operate a remote customer database.</p>
+
+<p>If you provide consent, up to 5 recently used phone numbers may be stored in local storage on this device.</p>
+
+<p>You can delete this history at any time using Clear History.</p>
+
+<p>When you use WhatsApp or another device/browser service, the phone number and message may be processed by that service.</p>
+
+<p>The Location feature may request location permission from your device.</p>
+
+<p>Selected images and documents are only selected/previewed in this web page. DirectSend does not upload them to a remote DirectSend server.</p>
+
+<p><b>Consent:</b> Before using the app, you must actively select the Privacy Policy consent checkbox. The checkbox is not pre-selected.</p>
+
+<p><a href="https://directsendapp.github.io/directsend-privacy-policy/privacy.html" target="_blank">View Full Online Privacy Policy</a></p>
+`
+
+:
+
+`
+<p><b>DirectSend Privacy Policy</b></p>
+
+<p>DirectSend एक messaging utility है। यह कोई remote customer database नहीं चलाता।</p>
+
+<p>Consent देने पर हाल के अधिकतम 5 phone numbers इस device के local storage में रखे जा सकते हैं।</p>
+
+<p>Clear History से history हटाई जा सकती है।</p>
+
+<p>WhatsApp या अन्य device/browser service इस्तेमाल करने पर phone number और message उस service द्वारा process किए जा सकते हैं।</p>
+
+<p>Location feature device location permission मांग सकता है।</p>
+
+<p>Selected images और documents केवल इस page पर select/preview किए जाते हैं। DirectSend इन्हें अपने remote server पर upload नहीं करता।</p>
+
+<p><b>सहमति:</b> App इस्तेमाल करने से पहले आपको Privacy Policy consent checkbox स्वयं चुनना होगा। यह पहले से चुना हुआ नहीं है।</p>
+
+<p><a href="https://directsendapp.github.io/directsend-privacy-policy/privacy.html" target="_blank">View Full Online Privacy Policy</a></p>
+`;
+
+document.getElementById("privacyModal").style.display="flex";
+
+}
+
+function closePrivacy(){
+
+document.getElementById("privacyModal").style.display="none";
+
+}
+
+window.onclick=function(e){
+
+const modal=document.getElementById("privacyModal");
+
+if(e.target===modal){
+
+closePrivacy();
+
+}
+
+};
+
+</script>
+
+</body>
+</html>
